@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../../../styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_firstproject.HelloController">
+   <MenuBar fx:id="menuBar" prefHeight="0.0" prefWidth="725.0">
+     <menus>
+       <Menu mnemonicParsing="false" text="קובץ">
+         <items>
+           <MenuItem mnemonicParsing="false" onAction="#openDir" text="פתח" />
+               <MenuItem mnemonicParsing="false" text="שמור" />
+               <MenuItem mnemonicParsing="false" onAction="#saveAs" text="שמור בשם" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+               <MenuItem mnemonicParsing="false" text="הרץ" />
+         </items>
+       </Menu>
+       <Menu mnemonicParsing="false" text="עריכה">
+         <items>
+           <MenuItem mnemonicParsing="false" text="Delete" />
+         </items>
+       </Menu>
+       <Menu mnemonicParsing="false" text="תצוגה">
+         <items>
+           <MenuItem mnemonicParsing="false" text="About" />
+         </items>
+       </Menu>
+         <Menu mnemonicParsing="false" text="עזרה">
+            <items>
+               <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+         </Menu>
+     </menus>
+   </MenuBar>
+   <SplitPane dividerPositions="0.8132780082987552" nodeOrientation="LEFT_TO_RIGHT" prefHeight="588.0" prefWidth="725.0" VBox.vgrow="ALWAYS">
+      <items>
+         <SplitPane dividerPositions="0.5" nodeOrientation="RIGHT_TO_LEFT" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+            <items>
+               <TabPane fx:id="tabPane" prefHeight="240.0" prefWidth="585.0" tabClosingPolicy="ALL_TABS">
+                  <tabs>
+                     <Tab text="Untitled Tab 1">
+                        <content>
+                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                     </Tab>
+                     <Tab text="Untitled Tab 2">
+                        <content>
+                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                     </Tab>
+                  </tabs>
+               </TabPane>
+               <TextFlow prefHeight="146.0" prefWidth="585.0" textAlignment="RIGHT" />
+            </items>
+         </SplitPane>
+         <ListView id="fileDescreptor" fx:id="fileDescriptor" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" />
+      </items>
+   </SplitPane>
+   <Label fx:id="bottomMsg" alignment="CENTER" contentDisplay="CENTER" text="ברוך הבא!" textAlignment="RIGHT" textFill="WHITE" />
+</VBox>

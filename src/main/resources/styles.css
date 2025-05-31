@@ -1,0 +1,54 @@
+/* styles.css */
+.text-area.no-scroll-bar .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-padding: 0;
+}
+
+.list-view.line-numbers .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-padding: 0;
+}
+
+.list-view.line-numbers {
+    -fx-opacity: 0.5;
+    -fx-padding: 5 0 5 0;
+    -fx-control-inner-background: #f0f0f0;
+}
+
+.list-view.line-numbers .list-cell {
+    -fx-padding: 0 5 0 5;
+    -fx-alignment: center-right;
+    -fx-text-fill: gray;
+}
+
+ListView {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+}
+
+SplitPane {
+    -fx-background-color: rgba(255, 255, 255, 0); /* White with 50% opacity */
+}
+
+TextArea {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+}
+
+TabPane {
+    -fx-background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+    /*-fx-background-image: url('/assets/background.jpg'); -fx-background-size: cover;*/
+}
+
+.list-cell.expanded-directory {
+    -fx-padding: 0 0 0 10;
+    -fx-background-color: #22c6a5; /* Light cyan for expanded directories */
+}
+
+VBox {
+    -fx-background-image: url('assets/background.jpg') !important;
+    -fx-background-size: 100% 100%;
+    /*-fx-background-size: cover;*/
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
