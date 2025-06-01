@@ -1,0 +1,12 @@
+VAR -> משתנה
+AND -> וגם
+OR -> או
+NOT
+IF -> אם
+ELIF -> אחרת_אם
+ELSE -> אחרת
+FOR -> לכל
+TO
+STEP
+WHILE -> כל_עוד
+THEN
