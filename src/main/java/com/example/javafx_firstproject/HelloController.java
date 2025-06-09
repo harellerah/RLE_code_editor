@@ -1,31 +1,53 @@
 package com.example.javafx_firstproject;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.client5.http.entity.EntityBuilder;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.fxmisc.richtext.StyleClassedTextArea;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+
 
 public class HelloController {
     @FXML
@@ -36,27 +58,100 @@ public class HelloController {
     private ListView<File> fileDescriptor;
     @FXML
     private Label bottomMsg;
+    @FXML
+    private TextFlow outputArea;
     private File selectedDir;
     private Set<File> expandedDirectories;
+
+    public void importFile(ActionEvent event) throws IOException, InterruptedException {
+        if (!TokenStorage.hasToken()) {
+            System.out.println("Not authenticated!");
+            Optional<String> token = LoginDialog.showAndWait();
+            if (token.isEmpty()) return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/files/download/" + "6846b1ad04f00486ab478c0f"))
+                .header("Authorization", "Bearer " + TokenStorage.getToken())
+                .GET()
+                .build();
+
+        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+        if (response.statusCode() == 200) {
+            // Save file to disk
+            try (InputStream inputStream = response.body()) {
+                // Extract filename from header
+                String disposition = response.headers().firstValue("Content-Disposition").orElse("");
+                String filename = "downloaded_file"; // fallback
+
+                if (disposition.contains("filename=")) {
+                    filename = disposition.substring(disposition.indexOf("filename=") + 9).replace("\"", "");
+                }
+                    System.out.println(filename);
+                    Files.copy(inputStream,
+                            Path.of(selectedDir.getAbsolutePath() + "\\" + filename), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+            System.out.println("File downloaded successfully to " + selectedDir.getAbsolutePath());
+        } else {
+            System.out.println("Failed to download file. Status code: " + response.statusCode());
+        }
+    }
+
+    public void exportFile(ActionEvent event) {
+        if (!TokenStorage.hasToken()) {
+            System.out.println("Not authenticated!");
+            Optional<String> token = LoginDialog.showAndWait();
+            if (token.isEmpty()) return;
+        }
+
+        // Prepare file
+        Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+        if (currentTab == null) return;
+        File programFile = new File(selectedDir.getAbsolutePath() + "\\" + currentTab.getText());
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost("http://localhost:8080/files/upload");
+            post.setHeader("Authorization", "Bearer " + TokenStorage.getToken());
+
+            FileBody fileBody = new FileBody(programFile);
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addPart("file", fileBody);
+
+            post.setEntity(builder.build());
+
+            try (CloseableHttpResponse response = client.execute(post)) {
+                String responseText = EntityUtils.toString(response.getEntity());
+                System.out.println("Status: " + response.getCode());
+                System.out.println("Response: " + responseText);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void runCode(ActionEvent event) {
         //take file content
         Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
         String file = selectedDir.getAbsolutePath();
         if (currentTab != null) {
-            file += currentTab.getText();
+            file += "\\"+currentTab.getText();
             BorderPane borderPane = (BorderPane) currentTab.getContent();
             TextArea textArea = (TextArea) borderPane.getCenter();
             bottomMsg.setText("running " + file);
         }
         //input into interpreter
-        File programFile = new File("");
+        File programFile = new File(file);
         String programOutput = "";
         int exitCode = 0;
         try {
             // Specify the Python script path and Python executable
-            ProcessBuilder pb = new ProcessBuilder("python3", Paths.get("") +
-                    "/script.py", programFile.getAbsolutePath());
+            ProcessBuilder pb = new ProcessBuilder("python3", Paths.get("").toAbsolutePath() +
+                    "\\CompilerFiles\\shell.py", programFile.getAbsolutePath());
             pb.redirectErrorStream(true); // Merge error and output streams
 
             // Start the process
@@ -66,7 +161,7 @@ public class HelloController {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                programOutput += line;
+                programOutput += line + "\n";
             }
 
             // Wait for the process to complete and get exit code
@@ -80,8 +175,17 @@ public class HelloController {
         //write interpreter output
         if (exitCode != 0) {
             //write error msg in red
+            System.out.println(programOutput);
+//            outputArea.setTextFormatter();
+            Text redText = new Text(programOutput);
+            redText.setFill(Color.RED);  // Set text color
+            outputArea.getChildren().clear();  // remove all children
+            outputArea.getChildren().add(redText);
         } else {
-            //write output
+            System.out.println(programOutput);
+            Text redText = new Text(programOutput);
+            outputArea.getChildren().clear();  // remove all children
+            outputArea.getChildren().add(redText);
         }
         bottomMsg.setText("finished ");
     }
@@ -89,8 +193,8 @@ public class HelloController {
     public void openDir(ActionEvent event) {
         // Get the Stage
         Stage stage = (Stage) menuBar.getScene().getWindow();
-
         // Open DirectoryChooser
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select a Directory");
         directoryChooser.setInitialDirectory(new File("C:/Users"));
@@ -168,14 +272,27 @@ public class HelloController {
                         contextMenu.hide();
                     });
 
+                    createItem.setOnAction( e -> {
+                        int i = 0;
+                            try {
+                                if (!new File("temp.rl").createNewFile()) {
+                                    while (! new File("temp"+i+".rl").createNewFile())
+                                        i++;
+                                }
+                            } catch (IOException ex) {
+                              //TODO
+                            }
+                        openFile(new File("temp"+i+".rl"));
+                        contextMenu.hide();
+                    });
                     // Use onAction or wrap each MenuItem with a listener
-                    for (MenuItem item : contextMenu.getItems()) {
-                        item.setOnAction(e -> {
-                            // Perform item action
-                            System.out.println(((MenuItem) e.getSource()).getText() + " clicked");
-                            contextMenu.hide();
-                        });
-                    }
+//                    for (MenuItem item : contextMenu.getItems()) {
+//                        item.setOnAction(e -> {
+//                            // Perform item action
+//                            System.out.println(((MenuItem) e.getSource()).getText() + " clicked");
+//                            contextMenu.hide();
+//                        });
+//                    }
                     int index = fileDescriptor.getSelectionModel().getSelectedIndex();
                     if (index != -1) {
                         fileDescriptor.getSelectionModel().select(index); // ensure correct item is selected
@@ -243,6 +360,7 @@ public class HelloController {
             // Populate ListView with file names
             File[] files = selectedDir.listFiles();
             if (files != null) {
+                fileDescriptor.getItems().removeAll(fileDescriptor.getItems());
                 for (File file : files) {
                     fileDescriptor.getItems().add(file);
                 }
@@ -294,8 +412,14 @@ public class HelloController {
 
         // Create TextArea with line numbers
         TextArea textArea = null;
+
+
         try {
             textArea = new TextArea(Files.readString(Path.of(WorkingFilesManager.openFilesList.get(index))));
+//            highlightWords(textArea,
+//                    text,
+//                    loadKeywordsFromJson(Paths.get("").toAbsolutePath() +
+//                            "\\CompilerFiles\\keywords.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -329,6 +453,25 @@ public class HelloController {
                 lineNumbers.scrollTo(Math.max(0, targetIndex - 1));
             }
         });
+        // Run after the scene is ready (e.g., in initialize or after layout pass)
+//        textArea.sceneProperty().addListener((obs, oldScene, newScene) -> {
+//            if (newScene != null) {
+//                Platform.runLater(() -> {
+//                    ScrollBar vScroll = findVerticalScrollBar(textArea);
+//                    if (vScroll != null) {
+//                        vScroll.valueProperty().addListener((scrollObs, oldVal, newVal) -> {
+//                            double scrollFraction = newVal.doubleValue();
+//                            String text = textArea.getText();
+//                            int lineCount = text.isEmpty() ? 1 : (int) text.chars().filter(ch -> ch == '\n').count() + 1;
+//                            int targetIndex = (int) (scrollFraction * lineCount);
+//                            lineNumbers.scrollTo(Math.max(0, targetIndex - 1));
+//                        });
+//                    }
+//                });
+//            }
+//        });
+
+
 
         // Update line numbers on text change
         textArea.textProperty().addListener((obs, oldText, newText) -> {
@@ -374,6 +517,32 @@ public class HelloController {
         bottomMsg.setText(newTab.getText() + " opened");
 
         return true;
+    }
+
+    public void highlightWords(StyleClassedTextArea area, String inputText, Set<String> keywords) {
+        area.clear();
+        area.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+        area.getStyleClass().add("right-align");
+        String[] tokens = inputText.split("(?<=\\s)|(?=\\s)"); // keep spaces as separate tokens
+        for (String token : tokens) {
+            String trimmedToken = token.trim();
+            if (!trimmedToken.isEmpty() && keywords.contains(trimmedToken.toUpperCase())) {
+                area.append(token, "highlight"); // apply CSS style class
+            } else {
+                area.append(token, "normal"); // fallback style
+            }
+        }
+    }
+
+
+    private ScrollBar findVerticalScrollBar(StyleClassedTextArea area) {
+        for (Node node : area.lookupAll(".scroll-bar")) {
+            if (node instanceof ScrollBar scrollBar &&
+                    scrollBar.getOrientation() == Orientation.VERTICAL) {
+                return scrollBar;
+            }
+        }
+        return null;
     }
 
     private boolean isChanged(Tab newTab) {
@@ -425,6 +594,19 @@ public class HelloController {
             }
         }
     }
+
+    public Set<String> loadKeywordsFromJson(String filePath) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> map = mapper.readValue(new File(filePath),
+                    new TypeReference<Map<String, String>>() {});
+            return new HashSet<>(map.values()); // return keys as the keywords set
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Set.of();
+        }
+    }
+
 
     private void updateLineNumbers(BorderPane borderPane, String text) {
         ListView<Integer> lineNumbers = (ListView<Integer>) borderPane.getLeft();

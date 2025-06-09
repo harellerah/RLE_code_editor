@@ -1,4 +1,5 @@
 import string
+import os
 import json
 
 DIGITS = '0123456789'
@@ -53,10 +54,10 @@ KEYWORDS = [
     'BREAK',
 ]
 '''
-with open('keywords.json', 'r', encoding='utf-8') as f:
+with open(os.getcwd()+'\\CompilerFiles\\keywords.json', 'r', encoding='utf-8') as f:
     KEYWORDS = json.load(f)
 
-with open('builtin.json', 'r', encoding='utf-8') as f:
+with open(os.getcwd()+'\\CompilerFiles\\builtin.json', 'r', encoding='utf-8') as f:
     BUILTIN = json.load(f)
 
 class Token:

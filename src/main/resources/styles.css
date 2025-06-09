@@ -23,6 +23,24 @@
     -fx-text-fill: gray;
 }
 
+.red-text {
+    -fx-fill: #ff0000;
+    -fx-font-weight: bold;
+}
+
+.highlight {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+
+.normal {
+    -fx-fill: black;
+}
+.right-align {
+    -fx-text-alignment: right;  /* works for paragraphs */
+    -fx-alignment: center-right; /* for container alignment */
+}
+
 ListView {
     -fx-background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
 }

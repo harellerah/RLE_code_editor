@@ -11,18 +11,33 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.fxmisc.richtext.StyleClassedTextArea?>
 <?import javafx.scene.text.TextFlow?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../../../styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_firstproject.HelloController">
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ScrollPane?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="1080.0"
+      prefWidth="1920.0" stylesheets="@../../../styles.css"
+      xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml"
+      xmlns:rtfx="http://github.com/FXMisc/RichTextFX"
+      fx:controller="com.example.javafx_firstproject.HelloController"
+>
    <MenuBar fx:id="menuBar" prefHeight="0.0" prefWidth="725.0">
      <menus>
        <Menu mnemonicParsing="false" text="קובץ">
          <items>
-           <MenuItem mnemonicParsing="false" onAction="#openDir" text="פתח" />
-               <MenuItem mnemonicParsing="false" text="שמור" />
-               <MenuItem mnemonicParsing="false" onAction="#saveAs" text="שמור בשם" />
-               <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" text="הרץ" />
+             <MenuItem mnemonicParsing="false" onAction="#openDir" text="פתח" />
+             <MenuItem mnemonicParsing="false" text="שמור" />
+             <MenuItem mnemonicParsing="false" onAction="#saveAs" text="שמור בשם" />
+             <SeparatorMenuItem mnemonicParsing="false" />
+             <MenuItem mnemonicParsing="false" onAction="#runCode" text="הרץ" />
+             <SeparatorMenuItem mnemonicParsing="false" />
+             <MenuItem mnemonicParsing="false" onAction="#importFile"
+                       text="ייבא" />
+             <MenuItem mnemonicParsing="false" onAction="#exportFile"
+                       text="ייצא" />
          </items>
        </Menu>
        <Menu mnemonicParsing="false" text="עריכה">
@@ -60,7 +75,11 @@
                      </Tab>
                   </tabs>
                </TabPane>
-               <TextFlow prefHeight="146.0" prefWidth="585.0" textAlignment="RIGHT" />
+                <ScrollPane fitToWidth="true">
+                    <content>
+                        <TextFlow fx:id="outputArea" maxWidth="400"/>
+                    </content>
+                </ScrollPane>
             </items>
          </SplitPane>
          <ListView id="fileDescreptor" fx:id="fileDescriptor" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" />

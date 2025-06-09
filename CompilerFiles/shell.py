@@ -1,11 +1,13 @@
 import sys
-
 import basic
+import pdb
 
-if len(sys.argv) == 1:
+
+if len(sys.argv) > 1:
 	# Access the arguments passed from another script
-	# file = str(sys.argv[1:]).removeprefix("['").removesuffix("']")
-	file = 'l.txt'
+	file = str(sys.argv[1:]).removeprefix("['").removesuffix("']")
+	print(file)
+	# file = 'l.txt'
 	text = ''
 	with open(file, encoding="utf-8") as f:
 		text = f.read()
