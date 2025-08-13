@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <script src="dashboard.js" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="max-w-5xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+  <p id="welcome" class="mb-6 text-gray-700"></p>
+
+  <!-- Assignments Section -->
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold mb-4">Assignments</h2>
+    <div id="assignmentsList" class="space-y-4"></div>
+
+    <!-- Teacher Upload Assignment -->
+    <div id="uploadAssignmentSection" class="hidden mt-6 bg-white p-4 rounded-lg shadow">
+      <h3 class="text-lg font-medium mb-3">Upload New Assignment</h3>
+      <form id="uploadAssignmentForm" class="space-y-4">
+        <input type="text" name="title" placeholder="Assignment Title" required
+               class="w-full px-3 py-2 border rounded-lg" />
+        <textarea name="description" placeholder="Assignment Description" required
+                  class="w-full px-3 py-2 border rounded-lg"></textarea>
+        <input type="file" name="file" id="assignmentFile" required
+               class="w-full px-3 py-2 border rounded-lg" />
+        <button type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+          Upload
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Submissions Section -->
+  <section>
+    <h2 class="text-xl font-semibold mb-4">Submissions</h2>
+    <div id="submissionsList" class="space-y-4"></div>
+
+    <!-- Student Submit Solution -->
+    <div id="submitSolutionSection" class="hidden mt-6 bg-white p-4 rounded-lg shadow">
+      <h3 class="text-lg font-medium mb-3">Submit Your Solution</h3>
+      <form id="submitSolutionForm" class="space-y-4">
+        <select name="assignment" required
+                class="w-full px-3 py-2 border rounded-lg"></select>
+        <input type="file" name="file" id="solutionFile" required
+               class="w-full px-3 py-2 border rounded-lg" />
+        <button type="submit"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+          Submit
+        </button>
+      </form>
+    </div>
+  </section>
+</div>
+</body>
+</html>
