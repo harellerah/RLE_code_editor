@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,44 +7,50 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-  <h2 class="text-2xl font-bold text-center mb-6">Create Account</h2>
+<body class="bg-cover bg-center flex items-center justify-center min-h-screen"
+      style="background-image: url('background.jpg');">
+<div class="bg-white bg-opacity-85 p-8 rounded-2xl shadow-lg w-full max-w-sm">
+  <h2 class="text-2xl font-bold text-center mb-6">צור משתמש</h2>
   <form id="signupForm" class="space-y-4">
     <div>
-      <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+      <label for="username"
+             class="block text-sm font-medium text-gray-700">שם משתמש
+      </label>
       <input type="text" id="username" name="username" required
              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
     <div>
       <label for="role" class="block text-sm font-medium text-gray-700">
-        Role
+        תפקיד
       </label>
       <select id="role" name="role" required
               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">Select role</option>
-        <option value="student">Student</option>
-        <option value="teacher">Teacher</option>
+        <option value="">בחר תפקיד</option>
+        <option value="student">תלמיד</option>
+        <option value="teacher">מורה</option>
       </select>
     </div>
     <div>
-      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+      <label for="password"
+             class="block text-sm font-medium text-gray-700">סיסמה
+      </label>
       <input type="password" id="password" name="password" required
              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
     <div>
-      <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+      <label for="confirmPassword"
+             class="block text-sm font-medium text-gray-700">וידוא סיסמה</label>
       <input type="password" id="confirmPassword" name="confirmPassword" required
              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
     <button type="submit"
             class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition">
-      Sign Up
+      הירשם
     </button>
   </form>
   <p class="text-center text-sm text-gray-500 mt-4">
-    Already have an account?
-    <a href="index.html" class="text-blue-500 hover:underline">Log in</a>
+    יש לך חשבון?
+    <a href="index.html" class="text-blue-500 hover:underline">התחברות</a>
   </p>
 </div>
 

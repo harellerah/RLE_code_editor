@@ -8,7 +8,7 @@ if (!token) {
     window.location.href = "login.html";
 }
 
-document.getElementById("welcome").textContent = `Welcome, ${username} (${userRole})`;
+document.getElementById("welcome").textContent = `ברוך הבא, ${username}`;
 
 // let userRole = null;
 
@@ -31,7 +31,7 @@ async function initDashboard() {
         await loadSubmissions();
     } catch (err) {
         console.error(err);
-        alert("Error loading dashboard.");
+        alert("שגיאה בעת טעינת הדף");
     }
 }
 
@@ -59,14 +59,14 @@ async function loadAssignments() {
 
         // Create download button
         const downloadBtn = document.createElement("button");
-        downloadBtn.textContent = "Download";
+        downloadBtn.textContent = "הורד";
         downloadBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 
         downloadBtn.addEventListener("click", () => {
             downloadFile(filename)
         });
         const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
+        deleteBtn.textContent = "מחק";
         deleteBtn.className = "ml-2 bg-red-500 text-white px-2 py-1 rounded";
         deleteBtn.onclick = () => deleteFile(filename);
 
@@ -102,7 +102,7 @@ async function loadSubmissions() {
 
         // Create download button
         const downloadBtn = document.createElement("button");
-        downloadBtn.textContent = "Download";
+        downloadBtn.textContent = "הורד";
         downloadBtn.className = "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded";
 
         downloadBtn.addEventListener("click", () => {
@@ -110,7 +110,7 @@ async function loadSubmissions() {
         });
 
         const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
+        deleteBtn.textContent = "מחק";
         deleteBtn.className = "ml-2 bg-red-500 text-white px-2 py-1 rounded";
         deleteBtn.onclick = () => deleteFile(s.filename);
 
@@ -137,10 +137,10 @@ document.getElementById("uploadAssignmentForm")?.addEventListener("submit", asyn
     });
 
     if (res.ok) {
-        alert("Assignment uploaded!");
-        loadAssignments();
+        alert("הקובץ הועלה בהצלחה!");
+        await loadAssignments();
     } else {
-        alert("Upload failed.");
+        alert("העלאה נכשלה");
     }
 });
 
@@ -164,10 +164,10 @@ document.getElementById("submitSolutionForm")?.addEventListener("submit", async 
     });
 
     if (res.ok) {
-        alert("Solution submitted!");
-        loadSubmissions();
+        alert("הקובץ הועלה בהצלחה!");
+        await loadSubmissions();
     } else {
-        alert("Submission failed.");
+        alert("העלאה נכשלה");
     }
 });
 
@@ -177,7 +177,7 @@ async function downloadFile(filename) {
     });
 
     if (!res.ok) {
-        alert("Failed to download file");
+        alert("הורדה נכשלה");
         return;
     }
 
@@ -217,9 +217,13 @@ async function deleteFile(filename) {
             await loadSubmissions();
         }
     } else {
-        alert("Error deleting file");
+        alert("שגיאה במחיקת הקובץ");
     }
 }
+
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    window.location.href = "index.html";
+})
 
 initDashboard();
 

@@ -16,7 +16,7 @@ if len(sys.argv) > 1:
  
 
 	if error:
-		print(error.as_string())
+		print(error.as_string() + " ERROR")
 	elif result:
 		if len(result.elements) == 1:
 			print(repr(result.elements[0]))

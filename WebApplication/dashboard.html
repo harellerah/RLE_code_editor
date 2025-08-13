@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,54 +7,69 @@
   <script src="dashboard.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-<div class="max-w-5xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-  <p id="welcome" class="mb-6 text-gray-700"></p>
+<body
+        class="bg-cover bg-center min-h-screen"
+        style="background-image: url('background.jpg');">
 
-  <!-- Assignments Section -->
-  <section class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">Assignments</h2>
-    <div id="assignmentsList" class="space-y-4"></div>
+<!-- Optional overlay to make text more readable -->
+<div class="bg-black bg-opacity-20 min-h-screen">
+  <div class="max-w-5xl mx-auto p-8 text-white">
 
-    <!-- Teacher Upload Assignment -->
-    <div id="uploadAssignmentSection" class="hidden mt-6 bg-white p-4 rounded-lg shadow">
-      <h3 class="text-lg font-medium mb-3">Upload New Assignment</h3>
-      <form id="uploadAssignmentForm" class="space-y-4">
-        <input type="text" name="title" placeholder="Assignment Title" required
-               class="w-full px-3 py-2 border rounded-lg" />
-        <textarea name="description" placeholder="Assignment Description" required
-                  class="w-full px-3 py-2 border rounded-lg"></textarea>
-        <input type="file" name="file" id="assignmentFile" required
-               class="w-full px-3 py-2 border rounded-lg" />
-        <button type="submit"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-          Upload
-        </button>
-      </form>
+    <!-- Header with Logout Button -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold">לוח המטלות</h1>
+      <button id="logoutBtn"
+              class="bg-red-500 hover:bg-red-600 text-white text-lg px-5 py-2 rounded-lg font-semibold">
+        התנתק
+      </button>
     </div>
-  </section>
 
-  <!-- Submissions Section -->
-  <section>
-    <h2 class="text-xl font-semibold mb-4">Submissions</h2>
-    <div id="submissionsList" class="space-y-4"></div>
+    <p id="welcome" class="mb-8 text-lg"></p>
 
-    <!-- Student Submit Solution -->
-    <div id="submitSolutionSection" class="hidden mt-6 bg-white p-4 rounded-lg shadow">
-      <h3 class="text-lg font-medium mb-3">Submit Your Solution</h3>
-      <form id="submitSolutionForm" class="space-y-4">
-        <select name="assignment" required
-                class="w-full px-3 py-2 border rounded-lg"></select>
-        <input type="file" name="file" id="solutionFile" required
-               class="w-full px-3 py-2 border rounded-lg" />
-        <button type="submit"
-                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-          Submit
-        </button>
-      </form>
-    </div>
-  </section>
+    <!-- Assignments Section -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-semibold mb-6"><u>מטלות</u></h2>
+      <div id="assignmentsList" class="space-y-6"></div>
+
+      <!-- Teacher Upload Assignment -->
+      <div id="uploadAssignmentSection" class="hidden mt-8 bg-white bg-opacity-80 p-6 rounded-lg shadow text-black">
+        <h3 class="text-xl font-medium mb-4">פרסם מטלה חדשה</h3>
+        <form id="uploadAssignmentForm" class="space-y-6">
+          <input type="text" name="title" placeholder="Assignment Title" required
+                 class="w-full px-4 py-3 border rounded-lg text-lg" />
+          <textarea name="description" placeholder="Assignment Description" required
+                    class="w-full px-4 py-3 border rounded-lg text-lg"></textarea>
+          <input type="file" name="file" id="assignmentFile" required
+                 class="w-full px-4 py-3 border rounded-lg text-lg" />
+          <button type="submit"
+                  class="bg-blue-500 hover:bg-blue-600 text-white text-lg px-6 py-3 rounded-lg font-semibold">
+            פרסם
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Submissions Section -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-6"><u>הגשות</u></h2>
+      <div id="submissionsList" class="space-y-6"></div>
+
+      <!-- Student Submit Solution -->
+      <div id="submitSolutionSection" class="hidden mt-8 bg-white bg-opacity-80 p-6 rounded-lg shadow text-black">
+        <h3 class="text-xl font-medium mb-4">הגש את הפתרון שלך</h3>
+        <form id="submitSolutionForm" class="space-y-6">
+          <select name="assignment" required
+                  class="w-full px-4 py-3 border rounded-lg text-lg"></select>
+          <input type="file" name="file" id="solutionFile" required
+                 class="w-full px-4 py-3 border rounded-lg text-lg" />
+          <button type="submit"
+                  class="bg-green-500 hover:bg-green-600 text-white text-lg px-6 py-3 rounded-lg font-semibold">
+            הגש
+          </button>
+        </form>
+      </div>
+    </section>
+  </div>
 </div>
 </body>
 </html>

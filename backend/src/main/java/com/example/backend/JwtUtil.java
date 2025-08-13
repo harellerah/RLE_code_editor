@@ -9,8 +9,13 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}") private static String secret;
+    private static String secret;
     @Value("${jwt.expiration}") private long expiration;
+
+    @Value("${jwt.secret}")
+    public void setSecret(String secretValue) {
+        JwtUtil.secret = secretValue; // inject into static
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()

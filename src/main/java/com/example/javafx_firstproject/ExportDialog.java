@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +20,13 @@ import java.util.Optional;
 public class ExportDialog {
     public static Optional<String> showAndWait() {
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("ייבא קובץ");
+        // Get the Stage from the Dialog
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+
+// Set the icon
+        stage.getIcons().add(new Image(ExportDialog.class.getResourceAsStream("/icons/app_icon" +
+                ".png"))); // or use a resource path
+        dialog.setTitle("ייצא קובץ");
 
         // Set OK/Cancel buttons
         ButtonType importButtonType = new ButtonType("ייצא",

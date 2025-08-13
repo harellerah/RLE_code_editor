@@ -67,6 +67,10 @@ public class HelloController {
     private Set<File> expandedDirectories;
 
     public void importFile(ActionEvent event) throws IOException, InterruptedException {
+        if (selectedDir == null) {
+            bottomMsg.setText("אנא פתח תיקייה כדי לייבא אליה קבצים");
+            return;
+        }
         if (!TokenStorage.hasToken()) {
             System.out.println("Not authenticated!");
             Optional<String> token = LoginDialog.showAndWait();
@@ -112,6 +116,10 @@ public class HelloController {
     }
 
     public void exportFile(ActionEvent event) {
+        if (tabPane.getSelectionModel().isEmpty()) {
+            bottomMsg.setText("אנא פתח קובץ בכדי לייצא אותו");
+            return;
+        }
         if (!TokenStorage.hasToken()) {
             System.out.println("Not authenticated!");
             Optional<String> token = LoginDialog.showAndWait();
@@ -159,6 +167,10 @@ public class HelloController {
     }
 
     public void runCode(ActionEvent event) {
+        if (tabPane.getSelectionModel().isEmpty()) {
+            bottomMsg.setText("אנא פתח קובץ בכדי להריץ אותו");
+            return;
+        }
         //take file content
         Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
         String file = selectedDir.getAbsolutePath();
@@ -172,6 +184,7 @@ public class HelloController {
         File programFile = new File(file);
         String programOutput = "";
         int exitCode = 0;
+        boolean exception = false;
         try {
             // Specify the Python script path and Python executable
             ProcessBuilder pb = new ProcessBuilder("python3", Paths.get("").toAbsolutePath() +
@@ -193,6 +206,7 @@ public class HelloController {
 
             // Wait for the process to complete and get exit code
             exitCode = process.waitFor();
+            exception = programOutput.endsWith("ERROR\n");
             programOutput = programOutput.substring(0,
                     programOutput.lastIndexOf("\n"));
             programOutput = programOutput.substring(0,
@@ -204,7 +218,7 @@ public class HelloController {
         }
 
         //write interpreter output
-        if (exitCode != 0) {
+        if (exitCode != 0 || exception) {
             //write error msg in red
             System.out.println(programOutput);
 //            outputArea.setTextFormatter();
@@ -362,10 +376,10 @@ public class HelloController {
                                         TextArea textArea = (TextArea) borderPane.getCenter();
                                         textArea.setText(content);
                                         updateLineNumbers(borderPane, content);
-                                        bottomMsg.setText("Loaded " + selectedFile.getName());
+                                        bottomMsg.setText("נטען " + selectedFile.getName());
                                     }
                                 } catch (IOException e) {
-                                    bottomMsg.setText("Error reading file: " + e.getMessage());
+                                    bottomMsg.setText("שגיאה בקריאת הקובץ: " + e.getMessage());
                                 }
                             }
                         } else if (selectedFile.isDirectory()) {
@@ -395,7 +409,7 @@ public class HelloController {
                                     }
                                     expandedDirectories.add(selectedFile);
                                 } else {
-                                    bottomMsg.setText("No files found in " + selectedFile.getName());
+                                    bottomMsg.setText("לא נמצא קובץ בתוך " + selectedFile.getName());
                                 }
                             }
                             fileDescriptor.refresh();
@@ -412,7 +426,7 @@ public class HelloController {
                     fileDescriptor.getItems().add(file);
                 }
             } else {
-                bottomMsg.setText("No files found or directory inaccessible.");
+                bottomMsg.setText("לא נמצאו קבצים או שהתיקייה אינה נגישה.");
             }
         }
     }
@@ -425,6 +439,7 @@ public class HelloController {
 
                 if (WorkingFilesManager.openFilesList.contains(selectedFile.getAbsolutePath())){
                     System.out.println("file already open");
+                    tabPane.getSelectionModel().select(WorkingFilesManager.openFilesList.indexOf(selectedFile.getAbsolutePath()));
                     return;
                 }
                 WorkingFilesManager.currentOpenFileIndex++;
@@ -533,18 +548,19 @@ public class HelloController {
         newTab.setOnCloseRequest(event -> {
             String content = getTabText(newTab);
             if (isChanged(newTab)) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Save tab content before closing?");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "תרצה " +
+                        "לשמור את תוכן הקובץ לפני סגירה?");
                 alert.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
                         try {
                             File saveFile = new File(selectedDir, newTab.getText());
                             writeToFile(saveFile, content, false);
-                            bottomMsg.setText("Saved tab content to " + saveFile.getName());
+                            bottomMsg.setText("התוכן נשמר לתוך: " + saveFile.getName());
                             if (!fileDescriptor.getItems().contains(saveFile)) {
                                 fileDescriptor.getItems().add(saveFile);
                             }
                         } catch (IOException e) {
-                            bottomMsg.setText("Error saving tab content: " + e.getMessage());
+                            bottomMsg.setText("שגיאה בעת שמירת התוכן: " + e.getMessage());
                             event.consume();
                         }
                     }
@@ -552,7 +568,7 @@ public class HelloController {
             }
             WorkingFilesManager.openFilesList.remove(selectedDir + "\\" + newTab.getText());
             WorkingFilesManager.currentOpenFileIndex--;
-            bottomMsg.setText(newTab.getText() + " closed");
+            bottomMsg.setText(newTab.getText() + " נסגר");
         });
 
         // Add the tab at the specific index
@@ -561,7 +577,7 @@ public class HelloController {
         // Optional: Select the new tab
         tabPane.getSelectionModel().select(newTab);
 
-        bottomMsg.setText(newTab.getText() + " opened");
+        bottomMsg.setText(newTab.getText() + " נפתח");
 
         return true;
     }
@@ -597,7 +613,7 @@ public class HelloController {
         String fileContent = "";
         try {
             fileContent =
-                    Files.readString(Path.of(WorkingFilesManager.openFilesList.get(WorkingFilesManager.currentOpenFileIndex)));
+                    Files.readString(Path.of(WorkingFilesManager.openFilesList.get(tabPane.getTabs().indexOf(newTab))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -615,6 +631,10 @@ public class HelloController {
     }
 
     public void save(ActionEvent event) {
+        if (tabPane.getSelectionModel().isEmpty()) {
+            bottomMsg.setText("אנא פתח קובץ בכדי לשמור אותו");
+            return;
+        }
         // Get the Stage
         Stage stage = (Stage) menuBar.getScene().getWindow();
 
@@ -628,19 +648,23 @@ public class HelloController {
         try {
             // Write (overwrite) to the file
             writeToFile(file, textToWrite, false);
-            bottomMsg.setText("Saved");
+            bottomMsg.setText("נשמר");
             // Update ListView if the file is in the current directory
             if (selectedDir != null && file.getParentFile().equals(selectedDir)) {
                 fileDescriptor.getItems().add(file);
             }
         } catch (IOException e) {
-            bottomMsg.setText("Error saving file: " + e.getMessage());
+            bottomMsg.setText("שגיאה בעת שמירת הקובץ " + e.getMessage());
         }
 
     }
 
 
     public void saveAs(ActionEvent event) {
+        if (tabPane.getSelectionModel().isEmpty()) {
+            bottomMsg.setText("אנא פתח קובץ בכדי לשמור אותו");
+            return;
+        }
         // Get the Stage
         Stage stage = (Stage) menuBar.getScene().getWindow();
 
@@ -657,13 +681,13 @@ public class HelloController {
             try {
                 // Write (overwrite) to the file
                 writeToFile(file, textToWrite, false);
-                bottomMsg.setText("Saved to " + file.getName());
+                bottomMsg.setText("נשמר לתוך " + file.getName());
                 // Update ListView if the file is in the current directory
                 if (selectedDir != null && file.getParentFile().equals(selectedDir)) {
                     fileDescriptor.getItems().add(file);
                 }
             } catch (IOException e) {
-                bottomMsg.setText("Error saving file: " + e.getMessage());
+                bottomMsg.setText("שגיאה בעת שמירת הקובץ " + e.getMessage());
             }
         }
     }

@@ -40,32 +40,33 @@
                        text="ייצא" />
          </items>
        </Menu>
-       <Menu mnemonicParsing="false" text="עריכה">
-         <items>
-           <MenuItem mnemonicParsing="false" text="Delete" />
-         </items>
-       </Menu>
-       <Menu mnemonicParsing="false" text="תצוגה">
-         <items>
-           <MenuItem mnemonicParsing="false" text="About" />
-         </items>
-       </Menu>
-         <Menu mnemonicParsing="false" text="עזרה">
-            <items>
-               <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-         </Menu>
+<!--       <Menu mnemonicParsing="false" text="עריכה">-->
+<!--         <items>-->
+<!--           <MenuItem mnemonicParsing="false" text="Delete" />-->
+<!--         </items>-->
+<!--       </Menu>-->
+<!--       <Menu mnemonicParsing="false" text="תצוגה">-->
+<!--         <items>-->
+<!--           <MenuItem mnemonicParsing="false" text="About" />-->
+<!--         </items>-->
+<!--       </Menu>-->
+<!--         <Menu mnemonicParsing="false" text="עזרה">-->
+<!--            <items>-->
+<!--               <MenuItem mnemonicParsing="false" text="About" />-->
+<!--            </items>-->
+<!--         </Menu>-->
      </menus>
    </MenuBar>
    <SplitPane dividerPositions="0.8132780082987552" nodeOrientation="LEFT_TO_RIGHT" prefHeight="588.0" prefWidth="725.0" VBox.vgrow="ALWAYS">
       <items>
          <SplitPane dividerPositions="0.5" nodeOrientation="RIGHT_TO_LEFT" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
             <items>
-               <TabPane fx:id="tabPane" prefHeight="240.0" prefWidth="585.0" tabClosingPolicy="ALL_TABS">
+               <TabPane fx:id="tabPane" prefHeight="240.0" prefWidth="585.0"
+                        tabClosingPolicy="ALL_TABS" opacity="0.96">
                   <tabs>
                   </tabs>
                </TabPane>
-                <ScrollPane fitToWidth="true">
+                <ScrollPane fitToWidth="true" opacity="0.8">
                     <content>
                         <TextFlow fx:id="outputArea" maxWidth="400"/>
                     </content>

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
+import javafx.stage.Stage;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
@@ -65,6 +67,12 @@ public class ImportDialog {
 
     public static Optional<String> showAndWait() {
         Dialog<String> dialog = new Dialog<>();
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+
+// Set the icon
+        stage.getIcons().add(new Image(ImportDialog.class.getResourceAsStream("/icons" +
+                "/app_icon" +
+                ".png"))); // or use a resource path
         dialog.setTitle("ייבא קובץ");
 
         // Set OK/Cancel buttons

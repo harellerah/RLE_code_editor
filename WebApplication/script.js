@@ -14,7 +14,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         if (response.ok) {
             const data = await response.json(); // Parse JSON from backend
-            alert("Login successful!");
+            // alert("Login successful!");
 
             // Save token and role
             localStorage.setItem("authToken", data.token);
@@ -25,11 +25,11 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             window.location.href = "dashboard.html";
         } else {
             const errorText = await response.text(); // Optional: get error message
-            alert(errorText || "Invalid credentials");
+            alert(errorText || "פרטים לא חוקיים");
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred. Please try again.");
+        alert("קרתה שגיאה. אנא נסה שוב");
     }
 });
 

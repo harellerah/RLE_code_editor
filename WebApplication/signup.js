@@ -10,7 +10,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         document.getElementById("confirmPassword").style.border = "2px solid red";
 
         let errorEl = document.createElement("div");
-        errorEl.textContent = "Passwords do not match";
+        errorEl.textContent = "הססמאות אינן זהות";
         errorEl.style.color = "red";
         errorEl.style.fontSize = "0.9em";
         document.getElementById("confirmPassword").insertAdjacentElement("afterend", errorEl);
@@ -27,7 +27,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         const data = await response;
 
         if (data.ok) {
-            alert("Account created! You can now log in.");
+            alert("החשבון נוצר בהצלחה! עכשיו תוכל להתחבר עם משתמש זה");
             window.location.href = "index.html";
         } else {
             const errorText = await response.text();
@@ -35,6 +35,6 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred. Please try again.");
+        alert("קרתה שגיאה. אנא נסה שוב");
     }
 });

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,6 +20,12 @@ public class LoginDialog {
 
     public static Optional<String> showAndWait() {
         Dialog<String> dialog = new Dialog<>();
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+
+// Set the icon
+        stage.getIcons().add(new Image(LoginDialog.class.getResourceAsStream("/icons" +
+                "/app_icon" +
+                ".png"))); // or use a resource path
         dialog.setTitle("התחברות");
 
         // Set OK/Cancel buttons
