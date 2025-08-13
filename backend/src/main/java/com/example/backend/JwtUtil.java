@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}") private String secret;
+    @Value("${jwt.secret}") private static String secret;
     @Value("${jwt.expiration}") private long expiration;
 
     public String generateToken(String username) {
@@ -20,7 +20,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public static String extractUsername(String token) {
+        token = token.startsWith("Bearer ")
+                ? token.substring(7)
+                : token;
         return Jwts.parserBuilder().setSigningKey(secret.getBytes()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }

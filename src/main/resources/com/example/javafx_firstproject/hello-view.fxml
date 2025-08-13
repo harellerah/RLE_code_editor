@@ -29,7 +29,7 @@
        <Menu mnemonicParsing="false" text="קובץ">
          <items>
              <MenuItem mnemonicParsing="false" onAction="#openDir" text="פתח" />
-             <MenuItem mnemonicParsing="false" text="שמור" />
+             <MenuItem mnemonicParsing="false" onAction="#save" text="שמור" />
              <MenuItem mnemonicParsing="false" onAction="#saveAs" text="שמור בשם" />
              <SeparatorMenuItem mnemonicParsing="false" />
              <MenuItem mnemonicParsing="false" onAction="#runCode" text="הרץ" />
@@ -63,16 +63,6 @@
             <items>
                <TabPane fx:id="tabPane" prefHeight="240.0" prefWidth="585.0" tabClosingPolicy="ALL_TABS">
                   <tabs>
-                     <Tab text="Untitled Tab 1">
-                        <content>
-                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                     </Tab>
-                     <Tab text="Untitled Tab 2">
-                        <content>
-                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                     </Tab>
                   </tabs>
                </TabPane>
                 <ScrollPane fitToWidth="true">

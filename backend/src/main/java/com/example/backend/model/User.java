@@ -11,9 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
-    private String id;
+    @Id private String id;
     private String username;
-    private String password; // hashed
+    private String password;
+    private String role; // "teacher" or "student"
 }
 

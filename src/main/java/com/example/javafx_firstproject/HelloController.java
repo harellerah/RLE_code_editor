@@ -34,6 +34,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -43,6 +44,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -69,10 +72,14 @@ public class HelloController {
             Optional<String> token = LoginDialog.showAndWait();
             if (token.isEmpty()) return;
         }
+
+        Optional<String> fn = ImportDialog.showAndWait();
+        if (fn.isEmpty()) return;
+
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/files/download/" + "6846b1ad04f00486ab478c0f"))
+                .uri(URI.create("http://localhost:8080/files/download/" + fn.get() + "?user=" + HelloApplication.cUser.getUsername() + "&role=" + HelloApplication.cUser.getRole()))
                 .header("Authorization", "Bearer " + TokenStorage.getToken())
                 .GET()
                 .build();
@@ -97,8 +104,10 @@ public class HelloController {
                 throw new RuntimeException(e);
             }
             System.out.println("File downloaded successfully to " + selectedDir.getAbsolutePath());
+            bottomMsg.setText("הקובץ הורד בהצלחה ל:" + selectedDir.getAbsolutePath());
         } else {
             System.out.println("Failed to download file. Status code: " + response.statusCode());
+            bottomMsg.setText("שגיאה מספר:" + response.statusCode());
         }
     }
 
@@ -108,6 +117,17 @@ public class HelloController {
             Optional<String> token = LoginDialog.showAndWait();
             if (token.isEmpty()) return;
         }
+
+        // Encode values to ensure they are URL-safe
+        String encodedParam1Value = URLEncoder.encode(HelloApplication.cUser.getUsername(),
+                StandardCharsets.UTF_8);
+        String encodedParam2Value =
+                URLEncoder.encode(HelloApplication.cUser.getRole(),
+                StandardCharsets.UTF_8);
+
+//        String uriStringWithParams = "http://localhost:8080/files/upload" +
+//                "?" + "uploader" + "=" + encodedParam1Value +
+//                "&" + "perm" + "=" + tagsString;
 
         // Prepare file
         Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
@@ -121,6 +141,10 @@ public class HelloController {
             FileBody fileBody = new FileBody(programFile);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.addPart("file", fileBody);
+            builder.addTextBody("uploader", encodedParam1Value);
+            builder.addTextBody("role", encodedParam2Value);
+            builder.addTextBody("type", "submission");
+            builder.addTextBody("assignment", ExportDialog.showAndWait().get());
 
             post.setEntity(builder.build());
 
@@ -142,7 +166,7 @@ public class HelloController {
             file += "\\"+currentTab.getText();
             BorderPane borderPane = (BorderPane) currentTab.getContent();
             TextArea textArea = (TextArea) borderPane.getCenter();
-            bottomMsg.setText("running " + file);
+            bottomMsg.setText("מריץ את: " + file);
         }
         //input into interpreter
         File programFile = new File(file);
@@ -153,6 +177,9 @@ public class HelloController {
             ProcessBuilder pb = new ProcessBuilder("python3", Paths.get("").toAbsolutePath() +
                     "\\CompilerFiles\\shell.py", programFile.getAbsolutePath());
             pb.redirectErrorStream(true); // Merge error and output streams
+
+            // Crucial: Set PYTHONIOENCODING for the subprocess
+            pb.environment().put("PYTHONIOENCODING", "utf-8");
 
             // Start the process
             Process process = pb.start();
@@ -166,7 +193,11 @@ public class HelloController {
 
             // Wait for the process to complete and get exit code
             exitCode = process.waitFor();
-            programOutput += "\n" + "Exit Code: " + exitCode;
+            programOutput = programOutput.substring(0,
+                    programOutput.lastIndexOf("\n"));
+            programOutput = programOutput.substring(0,
+                    programOutput.lastIndexOf("\n"));
+            programOutput += "\n\n" + "Exit Code: " + exitCode;
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -187,7 +218,7 @@ public class HelloController {
             outputArea.getChildren().clear();  // remove all children
             outputArea.getChildren().add(redText);
         }
-        bottomMsg.setText("finished ");
+        bottomMsg.setText("סיום ");
     }
 
     public void openDir(ActionEvent event) {
@@ -196,7 +227,7 @@ public class HelloController {
         // Open DirectoryChooser
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select a Directory");
+        directoryChooser.setTitle("בחר תיקייה");
         directoryChooser.setInitialDirectory(new File("C:/Users"));
         selectedDir = directoryChooser.showDialog(stage);
         expandedDirectories = new HashSet<>();
@@ -262,9 +293,9 @@ public class HelloController {
                 if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                     // Define the context menu
                     ContextMenu contextMenu = new ContextMenu();
-                    MenuItem openItem = new MenuItem("Open");
-                    MenuItem deleteItem = new MenuItem("Delete");
-                    MenuItem createItem = new MenuItem("New file");
+                    MenuItem openItem = new MenuItem("פתח");
+                    MenuItem deleteItem = new MenuItem("מחק");
+                    MenuItem createItem = new MenuItem("חדש");
                     contextMenu.getItems().addAll(openItem, deleteItem, createItem);
 
                     // ListView hover tracking
@@ -298,6 +329,22 @@ public class HelloController {
                         fileDescriptor.getSelectionModel().select(index); // ensure correct item is selected
                         contextMenu.show(fileDescriptor, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                     }
+
+                    deleteItem.setOnAction( e -> {
+                        Path filePath =
+                                fileDescriptor.getItems().get(index).toPath();
+                        try {
+                            if (Files.deleteIfExists(filePath)) {
+                                System.out.println("File deleted successfully (or it didn't exist): " + filePath.getFileName());
+                            } else {
+                                System.out.println("File did not exist, or could not be deleted for another reason: " + filePath.getFileName());
+                                // You might still get other IOExceptions here if it exists but can't be deleted.
+                            }
+                        } catch (IOException exep) {
+                            System.err.println("Error deleting file: " + exep.getMessage());
+                        }
+                        contextMenu.hide();
+                    });
                 }
                 else if (mouseEvent.getClickCount() == 2) {
                     int selectedIndex = fileDescriptor.getSelectionModel().getSelectedIndex();
@@ -566,6 +613,32 @@ public class HelloController {
         }
         return "";
     }
+
+    public void save(ActionEvent event) {
+        // Get the Stage
+        Stage stage = (Stage) menuBar.getScene().getWindow();
+
+        // Prepare file
+        Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+        if (currentTab == null) return;
+        File file = new File(selectedDir.getAbsolutePath() + "\\" + currentTab.getText());
+
+        // Get text from current tab
+        String textToWrite = getCurrentTabText();
+        try {
+            // Write (overwrite) to the file
+            writeToFile(file, textToWrite, false);
+            bottomMsg.setText("Saved");
+            // Update ListView if the file is in the current directory
+            if (selectedDir != null && file.getParentFile().equals(selectedDir)) {
+                fileDescriptor.getItems().add(file);
+            }
+        } catch (IOException e) {
+            bottomMsg.setText("Error saving file: " + e.getMessage());
+        }
+
+    }
+
 
     public void saveAs(ActionEvent event) {
         // Get the Stage

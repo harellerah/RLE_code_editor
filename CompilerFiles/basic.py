@@ -79,7 +79,7 @@ class Value:
         if not other: other = self
         return RTError(
             self.pos_start, other.pos_end,
-            'Illegal operation',
+            'פעולה לא חוקית',
             self.context
         )
 
@@ -112,7 +112,7 @@ class Number(Value):
             if other.value == 0:
                 return None, RTError(
                     other.pos_start, other.pos_end,
-                    'Division by zero',
+                    'חילוק באפס',
                     self.context
                 )
 
@@ -251,7 +251,7 @@ class List(Value):
             except:
                 return None, RTError(
                     other.pos_start, other.pos_end,
-                    'Element at this index could not be removed from list because index is out of bounds',
+                    'אין אפשרות להסיר איבר זה כי הוא מחוץ לגבולות המערך',
                     self.context
                 )
         else:
@@ -272,7 +272,7 @@ class List(Value):
             except:
                 return None, RTError(
                     other.pos_start, other.pos_end,
-                    'Element at this index could not be retrieved from list because index is out of bounds',
+                    'אין אפשרות להחזיר איבר זה כי הוא מחוץ לגבולות המערך',
                     self.context
                 )
         else:
@@ -307,14 +307,14 @@ class BaseFunction(Value):
         if len(args) > len(arg_names):
             return res.failure(RTError(
                 self.pos_start, self.pos_end,
-                f"{len(args) - len(arg_names)} too many args passed into {self}",
+                f"{len(args) - len(arg_names)} יותר מידי משתנים נשלחו ל {self}",
                 self.context
             ))
 
         if len(args) < len(arg_names):
             return res.failure(RTError(
                 self.pos_start, self.pos_end,
-                f"{len(arg_names) - len(args)} too few args passed into {self}",
+                f"{len(arg_names) - len(args)} מעט מידי משתנים נשלחו ל {self}",
                 self.context
             ))
 
@@ -363,7 +363,7 @@ class Function(BaseFunction):
         return copy
 
     def __repr__(self):
-        return f"<function {self.name}>"
+        return f"<פונקציה {self.name}>"
 
 
 class BuiltInFunction(BaseFunction):
@@ -385,7 +385,7 @@ class BuiltInFunction(BaseFunction):
         return res.success(return_value)
 
     def no_visit_method(self, node, context):
-        raise Exception(f'No execute_{self.name} method defined')
+        raise Exception(f'הפעל_{self.name} אינה פונקציה מוגדרת')
 
     def copy(self):
         copy = BuiltInFunction(self.name)
@@ -394,7 +394,7 @@ class BuiltInFunction(BaseFunction):
         return copy
 
     def __repr__(self):
-        return f"<built-in function {self.name}>"
+        return f"<פונקציה מובנית {self.name}>"
 
     #####################################
 
@@ -422,7 +422,7 @@ class BuiltInFunction(BaseFunction):
                 number = int(text)
                 break
             except ValueError:
-                print(f"'{text}' must be an integer. Try again!")
+                print(f"'{text}' צריך להיות מספר שלם, אנא נסה שוב!")
         return RTResult().success(Number(number))
 
     execute_input_int.arg_names = []
@@ -464,7 +464,7 @@ class BuiltInFunction(BaseFunction):
         if not isinstance(list_, List):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "First argument must be list",
+                "האיבר הראשון חייב להיות מערך",
                 exec_ctx
             ))
 
@@ -480,14 +480,14 @@ class BuiltInFunction(BaseFunction):
         if not isinstance(list_, List):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "First argument must be list",
+                "האיבר הראשון חייב להיות מערך",
                 exec_ctx
             ))
 
         if not isinstance(index, Number):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Second argument must be number",
+                "האיבר השני חייב להיות מספר",
                 exec_ctx
             ))
 
@@ -496,7 +496,7 @@ class BuiltInFunction(BaseFunction):
         except:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                'Element at this index could not be removed from list because index is out of bounds',
+                'אין אפשרות להסיר איבר זה כי הוא מחוץ לגבולות המערך',
                 exec_ctx
             ))
         return RTResult().success(element)
@@ -510,14 +510,14 @@ class BuiltInFunction(BaseFunction):
         if not isinstance(listA, List):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "First argument must be list",
+                "האיבר הראשון חייב להיות מערך",
                 exec_ctx
             ))
 
         if not isinstance(listB, List):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Second argument must be list",
+                "האיבר השני חייב להיות מערך",
                 exec_ctx
             ))
 
@@ -532,7 +532,7 @@ class BuiltInFunction(BaseFunction):
         if not isinstance(list_, List):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Argument must be list",
+                "האיבר חייב להיות מערך",
                 exec_ctx
             ))
 
@@ -546,7 +546,7 @@ class BuiltInFunction(BaseFunction):
         if not isinstance(fn, String):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                "Second argument must be string",
+                "האיבר השני חייב להיות מחרוזת",
                 exec_ctx
             ))
 
@@ -558,7 +558,7 @@ class BuiltInFunction(BaseFunction):
         except Exception as e:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                f"Failed to load script \"{fn}\"\n" + str(e),
+                f"נכשל בטעינת קובץ \"{fn}\"\n" + str(e),
                 exec_ctx
             ))
 
@@ -567,7 +567,7 @@ class BuiltInFunction(BaseFunction):
         if error:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                f"Failed to finish executing script \"{fn}\"\n" +
+                f"נכשל בהשלמת הרצת הקובץ \"{fn}\"\n" +
                 error.as_string(),
                 exec_ctx
             ))
@@ -637,7 +637,7 @@ class Interpreter:
         if not value:
             return res.failure(RTError(
                 node.pos_start, node.pos_end,
-                f"'{var_name}' is not defined",
+                f"'{var_name}' לא מוגדר",
                 context
             ))
 
@@ -876,7 +876,7 @@ class Parser:
         if not res.error and self.current_tok.type != TT_EOF:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Token cannot appear after previous tokens"
+                "משתנים לא יכולים להופיע אחד אחרי השני ללא הפרדה"
             ))
         return res
 
@@ -947,7 +947,7 @@ class Parser:
         if res.error:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected 'RETURN', 'CONTINUE', 'BREAK', 'VAR', 'IF', 'FOR', 'WHILE', 'FUN', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
+                f"צפוי {KEYWORDS['RETURN']}, {KEYWORDS['CONTINUE']}, {KEYWORDS['BREAK']}, {KEYWORDS['VAR']}, {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']}, מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[' או {KEYWORDS['NOT']}"
             ))
         return res.success(expr)
 
@@ -961,7 +961,7 @@ class Parser:
             if self.current_tok.type != TT_IDENTIFIER:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    "Expected identifier"
+                    "משתנה חייב להיות שם חוקי"
                 ))
 
             var_name = self.current_tok
@@ -971,7 +971,7 @@ class Parser:
             if self.current_tok.type != TT_EQ:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    "Expected '='"
+                    "צפוי '='"
                 ))
 
             res.register_advancement()
@@ -985,7 +985,7 @@ class Parser:
         if res.error:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected 'VAR', 'IF', 'FOR', 'WHILE', 'FUN', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
+                f"צפוי {KEYWORDS['VAR']}, {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']}, מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[' או {KEYWORDS['NOT']}"
             ))
 
         return res.success(node)
@@ -1007,7 +1007,7 @@ class Parser:
         if res.error:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                "Expected int, float, identifier, '+', '-', '(', '[', 'IF', 'FOR', 'WHILE', 'FUN' or 'NOT'"
+                f"צפוי מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[', {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']} או {KEYWORDS['NOT']}"
             ))
 
         return res.success(node)
@@ -1052,7 +1052,7 @@ class Parser:
                 if res.error:
                     return res.failure(InvalidSyntaxError(
                         self.current_tok.pos_start, self.current_tok.pos_end,
-                        "Expected ')', 'VAR', 'IF', 'FOR', 'WHILE', 'FUN', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
+                        f"צפוי ')', {KEYWORDS['VAR']}, {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']}, מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[' או {KEYWORDS['NOT']}"
                     ))
 
                 while self.current_tok.type == TT_COMMA:
@@ -1065,7 +1065,7 @@ class Parser:
                 if self.current_tok.type != TT_RPAREN:
                     return res.failure(InvalidSyntaxError(
                         self.current_tok.pos_start, self.current_tok.pos_end,
-                        f"Expected ',' or ')'"
+                        f"צפוי ',' או ')'"
                     ))
 
                 res.register_advancement()
@@ -1104,7 +1104,7 @@ class Parser:
             else:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    "Expected ')'"
+                    "צפוי ')'"
                 ))
 
         elif tok.type == TT_LSQUARE:
@@ -1134,7 +1134,7 @@ class Parser:
 
         return res.failure(InvalidSyntaxError(
             tok.pos_start, tok.pos_end,
-            "Expected int, float, identifier, '+', '-', '(', '[', IF', 'FOR', 'WHILE', 'FUN'"
+            f"צפוי מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[', {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']}"
         ))
 
     def list_expr(self):
@@ -1145,7 +1145,7 @@ class Parser:
         if self.current_tok.type != TT_LSQUARE:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected '['"
+                f"צפוי '['"
             ))
 
         res.register_advancement()
@@ -1159,7 +1159,7 @@ class Parser:
             if res.error:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    "Expected ']', 'VAR', 'IF', 'FOR', 'WHILE', 'FUN', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
+                    f"צפוי ']', {KEYWORDS['VAR']}, {KEYWORDS['IF']}, {KEYWORDS['FOR']}, {KEYWORDS['WHILE']}, {KEYWORDS['FUN']}, מספר שלם, מספר עשרוני, משתנה, '+', '-', '(', '[' או {KEYWORDS['NOT']}"
                 ))
 
             while self.current_tok.type == TT_COMMA:
@@ -1172,7 +1172,7 @@ class Parser:
             if self.current_tok.type != TT_RSQUARE:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected ',' or ']'"
+                    f"צפוי ',' או ']'"
                 ))
 
             res.register_advancement()
@@ -1216,7 +1216,7 @@ class Parser:
                 else:
                     return res.failure(InvalidSyntaxError(
                         self.current_tok.pos_start, self.current_tok.pos_end,
-                        "Expected 'END'"
+                        f"צפוי {[KEYWORDS['END']]}"
                     ))
             else:
                 expr = res.register(self.statement())
@@ -1247,7 +1247,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, case_keyword):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected '{case_keyword}'"
+                f"צפוי {KEYWORDS['{case_keyword}']}"
             ))
 
         res.register_advancement()
@@ -1259,7 +1259,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['THEN']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'THEN'"
+                f"צפוי {KEYWORDS['THEN']}"
             ))
 
         res.register_advancement()
@@ -1299,7 +1299,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['FOR']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'FOR'"
+                f"צפוי {KEYWORDS['FOR']}"
             ))
 
         res.register_advancement()
@@ -1308,7 +1308,7 @@ class Parser:
         if self.current_tok.type != TT_IDENTIFIER:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected identifier"
+                f"צפוי משתנה"
             ))
 
         var_name = self.current_tok
@@ -1318,7 +1318,7 @@ class Parser:
         if self.current_tok.type != TT_EQ:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected '='"
+                f"צפוי '='"
             ))
 
         res.register_advancement()
@@ -1330,7 +1330,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['TO']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'TO'"
+                f"צפוי {KEYWORDS['TO']}"
             ))
 
         res.register_advancement()
@@ -1351,7 +1351,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['THEN']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'THEN'"
+                f"צפוי {KEYWORDS['THEN']}"
             ))
 
         res.register_advancement()
@@ -1367,7 +1367,7 @@ class Parser:
             if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['END']):
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected 'END'"
+                    f"צפוי {KEYWORDS['END']}"
                 ))
 
             res.register_advancement()
@@ -1386,7 +1386,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['WHILE']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'WHILE'"
+                f"צפוי {KEYWORDS['WHILE']}"
             ))
 
         res.register_advancement()
@@ -1398,7 +1398,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['THEN']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'THEN'"
+                f"צפוי {KEYWORDS['THEN']}"
             ))
 
         res.register_advancement()
@@ -1414,7 +1414,7 @@ class Parser:
             if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['END']):
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected 'END'"
+                    f"צפוי {KEYWORDS['END']}"
                 ))
 
             res.register_advancement()
@@ -1433,7 +1433,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['FUN']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'FUN'"
+                f"צפוי {KEYWORDS['FUN']}"
             ))
 
         res.register_advancement()
@@ -1446,14 +1446,14 @@ class Parser:
             if self.current_tok.type != TT_LPAREN:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected '('"
+                    f"צפוי '('"
                 ))
         else:
             var_name_tok = None
             if self.current_tok.type != TT_LPAREN:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected identifier or '('"
+                    f"צפוי משתנה או '('"
                 ))
 
         res.register_advancement()
@@ -1472,7 +1472,7 @@ class Parser:
                 if self.current_tok.type != TT_IDENTIFIER:
                     return res.failure(InvalidSyntaxError(
                         self.current_tok.pos_start, self.current_tok.pos_end,
-                        f"Expected identifier"
+                        f"צפוי משתנה"
                     ))
 
                 arg_name_toks.append(self.current_tok)
@@ -1482,13 +1482,13 @@ class Parser:
             if self.current_tok.type != TT_RPAREN:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected ',' or ')'"
+                    f"צפוי ',' או ')'"
                 ))
         else:
             if self.current_tok.type != TT_RPAREN:
                 return res.failure(InvalidSyntaxError(
                     self.current_tok.pos_start, self.current_tok.pos_end,
-                    f"Expected identifier or ')'"
+                    f"צפוי משתנה או ')'"
                 ))
 
         res.register_advancement()
@@ -1511,7 +1511,7 @@ class Parser:
         if self.current_tok.type != TT_NEWLINE:
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected '->' or NEWLINE"
+                f"צפוי '->' או שורה חדשה"
             ))
 
         res.register_advancement()
@@ -1523,7 +1523,7 @@ class Parser:
         if not self.current_tok.matches(TT_KEYWORD, KEYWORDS['END']):
             return res.failure(InvalidSyntaxError(
                 self.current_tok.pos_start, self.current_tok.pos_end,
-                f"Expected 'END'"
+                f"צפוי {KEYWORDS['END']}"
             ))
 
         res.register_advancement()

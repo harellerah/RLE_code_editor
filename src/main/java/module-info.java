@@ -6,6 +6,7 @@ module com.example.javafx_firstproject {
     requires java.net.http;
     requires org.apache.httpcomponents.client5.httpclient5;
     requires org.apache.httpcomponents.core5.httpcore5;
+    requires spring.web;
 
 
     opens com.example.javafx_firstproject to javafx.fxml;

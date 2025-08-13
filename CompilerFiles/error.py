@@ -17,22 +17,22 @@ class Error:
 
 class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details):
-        super().__init__(pos_start, pos_end, 'Illegal Character', details)
+        super().__init__(pos_start, pos_end, 'תו לא חוקי', details)
 
 
 class ExpectedCharError(Error):
     def __init__(self, pos_start, pos_end, details):
-        super().__init__(pos_start, pos_end, 'Expected Character', details)
+        super().__init__(pos_start, pos_end, 'שגיאת תו צפוי', details)
 
 
 class InvalidSyntaxError(Error):
     def __init__(self, pos_start, pos_end, details=''):
-        super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
+        super().__init__(pos_start, pos_end, 'תחביר לא חוקי', details)
 
 
 class RTError(Error):
     def __init__(self, pos_start, pos_end, details, context):
-        super().__init__(pos_start, pos_end, 'Runtime Error', details)
+        super().__init__(pos_start, pos_end, 'שגיאת זמן ריצה', details)
         self.context = context
 
     def as_string(self):

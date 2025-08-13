@@ -60,6 +60,12 @@ with open(os.getcwd()+'\\CompilerFiles\\keywords.json', 'r', encoding='utf-8') a
 with open(os.getcwd()+'\\CompilerFiles\\builtin.json', 'r', encoding='utf-8') as f:
     BUILTIN = json.load(f)
 
+# with open(os.getcwd()+'\\keywords.json', 'r', encoding='utf-8') as f:
+#     KEYWORDS = json.load(f)
+
+# with open(os.getcwd()+'\\builtin.json', 'r', encoding='utf-8') as f:
+#     BUILTIN = json.load(f)
+    
 class Token:
     def __init__(self, type_, value=None, pos_start=None, pos_end=None):
         self.type = type_

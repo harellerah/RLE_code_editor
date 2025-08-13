@@ -17,11 +17,14 @@ public class LoginDialog {
 
     public static Optional<String> showAndWait() {
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Login");
+        dialog.setTitle("התחברות");
 
         // Set OK/Cancel buttons
-        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType loginButtonType = new ButtonType("התחבר",
+                ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("ביטול",
+                ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, cancelButtonType);
 
         // Create username and password fields
         GridPane grid = new GridPane();
@@ -29,13 +32,13 @@ public class LoginDialog {
         grid.setVgap(10);
 
         TextField usernameField = new TextField();
-        usernameField.setPromptText("Username");
+//        usernameField.setPromptText("שם משתמש");
         PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Password");
+//        passwordField.setPromptText("סיסמה");
 
-        grid.add(new Label("Username:"), 0, 0);
+        grid.add(new Label("שם משתמש:"), 0, 0);
         grid.add(usernameField, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
+        grid.add(new Label("סיסמה:"), 0, 1);
         grid.add(passwordField, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
@@ -77,9 +80,11 @@ public class LoginDialog {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(response.body());
                 String jwt = root.get("token").asText();
-                TokenStorage.setToken(jwt);   // ✅ store for later use
+                TokenStorage.setToken(jwt);
                 System.out.println("Logged in!");
-                return response.body(); // Return JWT token
+                HelloApplication.cUser = new User(username,
+                        root.get("role").asText());
+                return response.body();
             } else {
                 throw new RuntimeException("Login failed: " + response.body());
             }

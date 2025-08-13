@@ -34,6 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("JwtAuthenticationFilter triggered: " + request.getRequestURI());
 
+        if (request.getRequestURI().endsWith("register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String header = request.getHeader("Authorization");
         System.out.println("Authorization header: " + header);
 
