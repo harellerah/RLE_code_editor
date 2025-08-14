@@ -44,9 +44,10 @@ public class Assignment {
     }
 
     @GetMapping("/assignments")
-    public List<String> listAssignments() {
+    public List<String> listAssignments(@RequestHeader("Authorization") String token) {
+        String username = JwtUtil.extractUsername(token);
         GridFSFindIterable files =
-                gridFsTemplate.find(new Query(Criteria.where("metadata.type").is("assignment")));
+                gridFsTemplate.find(new Query(Criteria.where("metadata.type").is("assignment").andOperator(Criteria.where("metadata.uploader").is(username))));
         return StreamSupport.stream(files.spliterator(), false)
                 .map(GridFSFile::getFilename)
                 .toList();
@@ -68,9 +69,19 @@ public class Assignment {
         if (!role.equals("teacher"))
             return gridFsTemplate.find(new Query(Criteria.where(
                     "metadata.type").is("submission").andOperator(Criteria.where("metadata.uploader").is(username))))
-                .into(new ArrayList<>());;
-        return gridFsTemplate.find(new Query(Criteria.where("metadata.type").is("submission")))
                 .into(new ArrayList<>());
+        List<GridFSFile> all_subs =
+                gridFsTemplate.find(new Query(Criteria.where(
+                "metadata.type").is("submission")))
+                .into(new ArrayList<>());
+        List<GridFSFile> res = new ArrayList<>();
+        for (GridFSFile f : all_subs) {
+            if (!gridFsTemplate.find(new Query(Criteria.where("filename").is(
+                    f.getMetadata().get("assignment")).andOperator(Criteria.where("metadata" +
+                    ".uploader").is(username)))).into(new ArrayList<>()).isEmpty())
+                res.add(f);
+        }
+        return res;
     }
 
     @DeleteMapping("/assignments/{filename}")

@@ -174,6 +174,10 @@ public class HelloController {
         //take file content
         Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
         String file = selectedDir.getAbsolutePath();
+        if (!file.endsWith(".rl")) {
+            bottomMsg.setText("ניתן להריץ רק קבצים עם סיומת rl");
+            return;
+        }
         if (currentTab != null) {
             file += "\\"+currentTab.getText();
             BorderPane borderPane = (BorderPane) currentTab.getContent();
